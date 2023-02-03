@@ -1,0 +1,32 @@
+/2021 2022 這兩年出貨前五大產品.sql
+/CYCLETIME 低於標準即通知.sql
+/SMES
+/SMES 產品綁模具.sql
+/smes物料.txt
+/SPM篩選.sql
+/SQLQuery1.sql
+/SQLQuery2.sql
+/SQLQuery3.sql
+/SQLQuery4.sql
+/SQLQuery5.sql
+/SQLQuery6.sql
+/SQLQuery7.sql
+/SQLQuery8.sql
+/update.txt
+/vw_EQUIPMENT_STATE.sql
+/中興保全員工卡片資料.sql
+/中興保全打卡資料讀取.sql
+/中興保全每日班表.sql
+/品號基本資料屬於模具的尚未設定.sql
+/工單派工狀況.sql
+/模具中文名稱等資料更改.sql
+/模具生產入庫未拋到模具基本資料且品號基本資料有設定.sql
+/機台一段時間未生產即做通知.sql
+/機聯狀況update.txt
+/檢視有無lock表.sql
+/用A資料庫某表的格式，於B資料庫創建新表.sql
+/短少多餘通知、.sql
+/訂單的easyflow簽核時間.sql
+/訂單預交.sql
+/重建索引.jpg
+/重置自增的值为0.sql
