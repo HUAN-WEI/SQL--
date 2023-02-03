@@ -1,0 +1,33 @@
+--smes機台待出站數 比對 暫存表(10分鐘前的smes機台待出站數)，異常即做通知--
+SELECT A.EQUIPMENTNO,A.EQUIPCOUNT-C.QUANLTITY QUANLTITY
+	,CASE WHEN datediff(minute,B.STARTTIME,GETDATE())>C.TIME_M
+	THEN datediff(minute,B.STARTTIME,GETDATE())-C.TIME_M 
+	ELSE datediff(minute,B.STARTTIME,GETDATE()) END TIME_M ,C.UpdateTime 
+FROM TBLEQPEQUIPCONFIG_C A   --機聯
+LEFT JOIN TBLEMSEQUIPMENTSTATE B ON A.EQUIPMENTNO=B.EQUIPMENTNO 
+LEFT JOIN TEST.dbo.SMES_EQUIPMENTSTATE C ON A.EQUIPMENTNO=C.EQUIPMENTNO Collate Chinese_Taiwan_Stroke_BIN 
+LEFT JOIN [TEST].[dbo].[EquipmentNotificationSetting] D ON A.EQUIPMENTNO=D.equipmentno Collate Chinese_Taiwan_Stroke_BIN 
+WHERE B.EQUIPMENTSTATE=1 AND A.EQUIPCOUNT-C.QUANLTITY=0  --一開始的十分鐘不管，即A.EQUIPCOUNT-C.QUANLTITY<0   例如：排除換批號 計數器清除 現在0   10分前100
+	and (CASE WHEN datediff(minute,B.STARTTIME,GETDATE())>C.TIME_M THEN datediff(minute,B.STARTTIME,GETDATE())-C.TIME_M 
+			ELSE datediff(minute,B.STARTTIME,GETDATE()) END)>=10  --確保現在機台R超過10分
+	and (d.idle_notification = 'true' or d.idle_notification IS NULL) 
+	and A.EQUIPLOTNO NOT LIKE '5105%' AND A.EQUIPINQTY>1000
+
+
+
+
+--select datediff(minute,STARTTIME,GETDATE()),* from TBLEMSEQUIPMENTSTATE where EQUIPMENTNO='KP650-4'
+--SELECT TOP (1000) [EQUIPMENTNO],[QUANLTITY],[TIME_M],[UpdateTime] FROM [TEST].[dbo].[SMES_EQUIPMENTSTATE]
+--SELECT  * FROM SMES_Production.dbo.TBLEQPEQUIPCONFIG_C A 
+
+
+--smes待出站數量 改變才抄寫過去暫存表--	
+BEGIN TRAN
+update   b  set   QUANLTITY    =   a.EQUIPCOUNT ,b.TIME_M=a.TIME_M ,B.UpdateTime=GETDATE()  
+from   (SELECT A.EQUIPMENTNO,datediff(minute,B.STARTTIME,GETDATE()) TIME_M,A.EQUIPCOUNT 
+		FROM SMES_Production.dbo.TBLEQPEQUIPCONFIG_C A  --機聯
+		LEFT JOIN SMES_Production.dbo.TBLEMSEQUIPMENTSTATE B ON A.EQUIPMENTNO=B.EQUIPMENTNO)a
+,TEST.dbo.SMES_EQUIPMENTSTATE b  
+where   a.EQUIPMENTNO   =   b.EQUIPMENTNO Collate Chinese_Taiwan_Stroke_BIN and a.EQUIPCOUNT != b.QUANLTITY
+ROLLBACK
+
